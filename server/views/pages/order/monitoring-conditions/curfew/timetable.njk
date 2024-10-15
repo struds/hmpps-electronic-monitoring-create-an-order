@@ -1,0 +1,136 @@
+{% extends "../../../../partials/layout.njk" %}
+
+{% set pageTitle = applicationName + " - Form Details" %}
+{% set mainClasses = "app-container govuk-body" %}
+{% from "moj/components/page-header-actions/macro.njk" import mojPageHeaderActions %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
+{% from "govuk/components/date-input/macro.njk" import govukDateInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "../../../../partials/timeSpanInput.njk" import timeSpanInput %}
+
+{% block content %}
+
+<script type="text/javascript">
+
+function duplicateTimetableBlock(day) {
+  const currentTimetables = document.querySelectorAll(`#${day}-timetables .timetable`)
+  const newId = currentTimetables.length
+  const newNode = currentTimetables[0].cloneNode(true)
+  newNode.querySelectorAll('*').forEach(el => {
+    if(el.name){
+      el.name = el.name.replace(`${day}[0]`, `${day}[${newId}]`)
+    }
+    if(el.id){
+      el.id = el.id.replace(`${day}-0`, `${day}-${newId}`)
+    }
+    if(el.htmlFor){
+      el.htmlFor = el.htmlFor.replace(`${day}-0`, `${day}-${newId}`)
+    }
+  })
+  
+  currentTimetables[0].parentNode.appendChild(newNode)
+  return false
+}
+
+</script>
+
+  {{ govukBackLink({
+    text: "Back",
+    href: orderSummaryUri
+  }) }}
+
+  {% if not isOrderEditable %}
+      {% set html %}
+        <p class="govuk-notification-banner__heading">
+          You are viewing a submitted order.
+        </p>
+      {% endset %}
+
+      {{ govukNotificationBanner({
+        html: html
+      }) }}
+  {% endif %}
+
+  <div class="homepage-content">
+    {{ mojPageHeaderActions({
+      heading: {
+          text: "Monitoring conditions"
+      }
+    }) }}
+  </div>
+
+  <h2 class="govuk-heading-m">Timetable for curfew with electronic monitoring</h2>
+
+  <form method="post">
+    <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+
+
+    {% set days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"] %}
+
+    {% for day in days %}
+    <h3 class="govuk-heading-m">{{ day | title}}</h3>
+      <div id="{{ day }}-timetables">
+        <div class="timetable">
+          {{ timeSpanInput({
+              id: "curfewTimetable.{{ day }}-0.time",
+              name: "curfewTimetable.{{ day }}[0].time",
+              value: curfewTimetable[day][0].time.value,
+              errorMessage: curfewTimetable[day][0].time.error,
+              disabled: not isOrderEditable
+            }) }}
+          
+          {{ govukCheckboxes({
+            idPrefix: "curfewTimetable.{{ day }}-0.addresses",
+            name: "curfewTimetable.{{ day }}[0].addresses[]",
+            value: curfewTimetable[day][0].addresses,
+            items: [
+              {
+                text: 'Primary address',
+                value: 'PRIMARY',
+                disabled: not isOrderEditable
+              },
+              {
+                text: 'Secondary address',
+                value: 'SECONDARY',
+                disabled: not isOrderEditable
+              },
+              {
+                text: 'Third address',
+                value: 'TERTIARY',
+                disabled: not isOrderEditable
+              }
+            ],
+            errorMessage: devicesRequired.error
+          }) }}
+        </div>
+      </div>
+      <p class="govuk-body">
+        <a href="#" class="govuk-link" onclick="duplicateTimetableBlock('{{ day }}'); return false">Add another time</a>
+      </p>
+    {% endfor %}
+
+    <div class="govuk-button-group">
+      {% if isOrderEditable %}
+        {{ govukButton({
+            text: "Save and continue",
+            name: "action",
+            value: "continue"
+        }) }}
+        {{ govukButton({
+            text: "Save and return back to to form section menu",
+            classes: "govuk-button--secondary",
+            name: "action",
+            value: "back"
+        }) }}
+      {% else %}
+        <a id="backToSummary" class="govuk-link" href="{{ orderSummaryUri }}">Return back to to form section menu</a>
+      {% endif %}
+    </div>
+  </form>
+
+{% endblock %}

@@ -29,8 +29,8 @@ export default function routes({
   attendanceMonitoringService,
   auditService,
   contactDetailsService,
-  curfewDatesService,
   curfewDayOfReleaseService,
+  curfewDatesService,
   curfewTimetableService,
   deviceWearerResponsibleAdultService,
   deviceWearerService,
@@ -145,6 +145,7 @@ export default function routes({
   // Exclusion Inclusion Zone
   get(paths.MONITORING_CONDITIONS.ZONE, zoneController.view)
   post(paths.MONITORING_CONDITIONS.ZONE, zoneController.update)
+
   /**
    * ATTACHMENTS
    */

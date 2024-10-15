@@ -3,10 +3,9 @@
 import { Request, RequestHandler, Response } from 'express'
 import { z } from 'zod'
 import paths from '../../constants/paths'
-import { CurfewDates } from '../../models/CurfewDates'
+import { CurfewConditions } from '../../models/CurfewConditions'
 import { ValidationResult } from '../../models/Validation'
-import { AuditService } from '../../services'
-import CurfewDatesService from '../../services/curfewDatesService'
+import { AuditService, CurfewDatesService } from '../../services'
 
 const curfewDatesFormDataModel = z.object({
   action: z.string().default('continue'),
@@ -23,7 +22,7 @@ export default class CurfewDatesController {
   ) {}
 
   private constructViewModel(
-    curfewDates: CurfewDates,
+    curfewConditions: CurfewConditions,
     validationErrors: ValidationResult,
     formData: [CurfewDatesFormData],
     formAction: string,
@@ -32,10 +31,13 @@ export default class CurfewDatesController {
       return this.createViewModelFromFormData(formData[0], validationErrors, formAction)
     }
 
-    return this.createViewModelFromCurfewDates(curfewDates, formAction)
+    return this.createViewModelFromCurfewConditions(curfewConditions, formAction)
   }
 
-  private createViewModelFromCurfewDates(curfewDates: CurfewDates, orderId: string): CurfewDatesViewModel {
+  private createViewModelFromCurfewConditions(
+    curfewConditions: CurfewConditions,
+    orderId: string,
+  ): CurfewDatesViewModel {
     return {}
   }
 

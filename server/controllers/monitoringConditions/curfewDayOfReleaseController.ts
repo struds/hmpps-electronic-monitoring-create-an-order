@@ -3,10 +3,9 @@
 import { Request, RequestHandler, Response } from 'express'
 import { z } from 'zod'
 import paths from '../../constants/paths'
-import { CurfewDayOfRelease } from '../../models/CurfewDayOfRelease'
+import { CurfewReleaseDateConditions } from '../../models/CurfewReleaseDateConditions'
 import { ValidationResult } from '../../models/Validation'
-import { AuditService } from '../../services'
-import CurfewDayOfReleaseService from '../../services/curfewDayOfReleaseService'
+import { AuditService, CurfewDayOfReleaseService } from '../../services'
 
 const curfewDayOfReleaseFormDataModel = z.object({
   action: z.string().default('continue'),
@@ -23,7 +22,7 @@ export default class CurfewDayOfReleaseController {
   ) {}
 
   private constructViewModel(
-    curfewDayOfRelease: CurfewDayOfRelease,
+    curfewReleaseDateConditions: CurfewReleaseDateConditions,
     validationErrors: ValidationResult,
     formData: [CurfewDayOfReleaseFormData],
     formAction: string,
@@ -32,11 +31,11 @@ export default class CurfewDayOfReleaseController {
       return this.createViewModelFromFormData(formData[0], validationErrors, formAction)
     }
 
-    return this.createViewModelFromCurfewDayOfRelease(curfewDayOfRelease, formAction)
+    return this.createViewModelFromCurfewDayOfRelease(curfewReleaseDateConditions, formAction)
   }
 
   private createViewModelFromCurfewDayOfRelease(
-    curfewDayOfRelease: CurfewDayOfRelease,
+    curfewReleaseDateConditions: CurfewReleaseDateConditions,
     orderId: string,
   ): CurfewDayOfReleaseViewModel {
     return {}
