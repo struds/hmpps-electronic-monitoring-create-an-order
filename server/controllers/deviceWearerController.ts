@@ -27,11 +27,11 @@ const DeviceWearerFormDataModel = z.object({
   adultAtTimeOfInstallation: z.string().default(''),
   sex: z.string().default(''),
   gender: z.string().default(''),
-  otherGender: z.string().optional(),
+  selfIdentifyGender: z.string().optional(),
   disabilities: z
     .union([z.string(), z.array(z.string()).default([])])
     .transform(val => (Array.isArray(val) ? val : [val])),
-  otherDisability: z.string().optional(),
+  otherDisabilities: z.string().optional(),
 })
 
 type DeviceWearerFormData = z.infer<typeof DeviceWearerFormDataModel>
@@ -54,9 +54,9 @@ type DeviceWearerViewModel = {
   adultAtTimeOfInstallation: TextField
   sex: TextField
   gender: TextField
-  otherGender: TextField
+  selfIdentifyGender: TextField
   disabilities: MultipleChoiceField
-  otherDisability: TextField
+  otherDisabilities: TextField
   language: TextField
   interpreterRequired: TextField
 }
@@ -97,9 +97,15 @@ export default class DeviceWearerController {
       },
       sex: { value: formData.sex || '', error: getError(validationErrors, 'sex') },
       gender: { value: formData.gender || '', error: getError(validationErrors, 'gender') },
-      otherGender: { value: formData.otherGender || '', error: getError(validationErrors, 'otherGender') },
+      selfIdentifyGender: {
+        value: formData.selfIdentifyGender || '',
+        error: getError(validationErrors, 'selfIdentifyGender'),
+      },
       disabilities: { values: formData.disabilities || '', error: getError(validationErrors, 'disabilities') },
-      otherDisability: { value: formData.otherDisability || '', error: getError(validationErrors, 'otherDisability') },
+      otherDisabilities: {
+        value: formData.otherDisabilities || '',
+        error: getError(validationErrors, 'otherDisabilities'),
+      },
       language: { value: formData.language || '', error: getError(validationErrors, 'language') },
       interpreterRequired: {
         value: formData.interpreterRequired || '',
@@ -131,9 +137,9 @@ export default class DeviceWearerController {
       adultAtTimeOfInstallation: { value: String(deviceWearer.adultAtTimeOfInstallation) },
       sex: { value: deviceWearer.sex || '' },
       gender: { value: deviceWearer.gender || '' },
-      otherGender: { value: deviceWearer.otherGender || '' },
+      selfIdentifyGender: { value: deviceWearer.selfIdentifyGender || '' },
       disabilities: { values: deviceWearer.disabilities ?? [] },
-      otherDisability: { value: deviceWearer.otherDisability || '' },
+      otherDisabilities: { value: deviceWearer.otherDisabilities || '' },
       language: { value: deviceWearer.language || '' },
       interpreterRequired: { value: String(deviceWearer.interpreterRequired) || '' },
     }

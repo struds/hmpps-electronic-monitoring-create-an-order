@@ -230,18 +230,18 @@
     disabled: not isOrderEditable
   }) }}
 
-  {% set otherGenderHtml %}
+  {% set selfIdentifyGenderHtml %}
     {{
       govukInput({
       label: {
-        text: "Other gender"
+        text: "Self identified gender"
       },
       id: "other-gender",
-      name: "otherGender",
+      name: "selfIdentifyGender",
       classes: "govuk-!-width-one-third",
-      errorMessage: otherGender.error,
+      errorMessage: selfIdentifyGender.error,
       disabled: not isOrderEditable,
-      value: otherGender.value
+      value: selfIdentifyGender.value
       })
     }}
   {% endset %}
@@ -283,7 +283,7 @@
         value: "self-identify",
         text: "Self identify",
         conditional: {
-          html: otherGenderHtml
+          html: selfIdentifyGenderHtml
         },
         disabled: not isOrderEditable
       }
@@ -293,18 +293,18 @@
     disabled: not isOrderEditable
   }) }}
 
-  {% set otherDisabilityHtml %}
+  {% set otherDisabilitiesHtml %}
     {{
       govukInput({
       label: {
-        text: "Other disability"
+        text: "Other disabilities"
       },
       id: "disabilities-detail",
-      name: "otherDisability",
+      name: "otherDisabilities",
       classes: "govuk-!-width-one-third",
-      errorMessage: otherDisability.error,
+      errorMessage: otherDisabilities.error,
       disabled: not isOrderEditable,
-      value: otherDisability.value
+      value: otherDisabilities.value
       })
     }}
   {% endset %}
@@ -363,7 +363,7 @@
         value: "Other",
         text: "Other",
         conditional: {
-          html: otherDisabilityHtml
+          html: otherDisabilitiesHtml
         }
       },
       {

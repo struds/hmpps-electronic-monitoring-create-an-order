@@ -93,8 +93,8 @@ export default class AboutDeviceWearerFormComponent extends FormComponent {
     return new FormRadiosComponent(this.form, label, ['Male', 'Female', 'Non binary', "Don't know", 'Self identify'])
   }
 
-  get otherGenderField(): FormInputComponent {
-    const label = 'Other gender'
+  get selfIdentifyGenderField(): FormInputComponent {
+    const label = 'Self identified gender'
     return new FormInputComponent(this.form, label)
   }
 
@@ -117,8 +117,8 @@ export default class AboutDeviceWearerFormComponent extends FormComponent {
     ])
   }
 
-  get otherDisabilityField(): FormInputComponent {
-    const label = 'Other disability'
+  get otherDisabilitiesField(): FormInputComponent {
+    const label = 'Other disabilities'
     return new FormInputComponent(this.form, label)
   }
 

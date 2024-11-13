@@ -81,14 +81,14 @@ context('About the device wearer', () => {
       const page = Page.visit(AboutDeviceWearerPage, { orderId: mockOrderId })
 
       page.form.genderIdentityField.shouldHaveValue('Self identify')
-      page.form.otherGenderField.shouldHaveValue('Furby')
+      page.form.selfIdentifyGenderField.shouldHaveValue('Gender anarchist')
     })
 
     it('Should display a text input for a disability of "Other"', () => {
       const page = Page.visit(AboutDeviceWearerPage, { orderId: mockOrderId })
 
       page.form.disabilityField.shouldHaveValue('Other')
-      page.form.otherDisabilityField.shouldHaveValue('Broken arm')
+      page.form.otherDisabilitiesField.shouldHaveValue('Broken arm')
     })
   })
 
