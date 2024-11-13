@@ -27,11 +27,11 @@ const DeviceWearerFormDataModel = z.object({
   adultAtTimeOfInstallation: z.string().default(''),
   sex: z.string().default(''),
   gender: z.string().default(''),
-  selfIdentifyGender: z.string().optional(),
+  selfIdentifyGender: z.string().default(''),
   disabilities: z
     .union([z.string(), z.array(z.string()).default([])])
     .transform(val => (Array.isArray(val) ? val : [val])),
-  otherDisabilities: z.string().optional(),
+  otherDisabilities: z.string().default(''),
 })
 
 type DeviceWearerFormData = z.infer<typeof DeviceWearerFormDataModel>

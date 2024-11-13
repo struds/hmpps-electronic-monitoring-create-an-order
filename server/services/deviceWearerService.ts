@@ -22,7 +22,9 @@ type UpdateDeviceWearerRequestInput = AuthenticatedRequestInput & {
     adultAtTimeOfInstallation: string
     sex: string
     gender: string
+    selfIdentifyGender: string
     disabilities: Array<string>
+    otherDisabilities: string
   }
 }
 
@@ -47,6 +49,10 @@ export default class DeviceWearerService {
       return ValidationResultModel.parse([isDateOfBirthValid.error])
     }
 
+    const selfIdentifyGender = () => (input.data.gender === 'self-identify' ? input.data.selfIdentifyGender : '')
+
+    const otherDisabilities = () => (input.data.disabilities.includes('Other') ? input.data.otherDisabilities : '')
+
     try {
       const {
         'dateOfBirth-day': dobDay,
@@ -61,7 +67,9 @@ export default class DeviceWearerService {
         data: {
           ...data,
           dateOfBirth: serialiseDate(dobYear, dobMonth, dobDay),
+          selfIdentifyGender: selfIdentifyGender(),
           disabilities: disabilities.join(','),
+          otherDisabilities: otherDisabilities(),
         },
         token: input.accessToken,
       })
