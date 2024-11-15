@@ -6,6 +6,8 @@
 {%- from "moj/components/search/macro.njk" import mojSearch -%}
 {%- from "moj/components/pagination/macro.njk" import mojPagination -%}
 {% from "govuk/components/button/macro.njk" import govukButton %}
+  {%- from "govuk/components/input/macro.njk" import govukInput %}
+  {%- from "govuk/components/button/macro.njk" import govukButton %}
 
 {% block content %}
   {{ mojPageHeaderActions({
@@ -24,28 +26,11 @@
     </div>
   </form>
 
-{# {{ mojSearch({
-    action: '#',
-    method: 'get',
-    input: {
-      id: 'keyword',
-      name: 'keyword'
-    },
-    label: {
-      text: 'Find an order',
-      classes: 'govuk-!-font-weight-bold'
-    },
-    hint: {
-      text: 'You can search by subject name'
-    },
-    button: {
-      text: 'Search'
-    }
-  }) }}
+
 
  {% if previous != 0 %}
   {% set previousButton = { text: 'Previous', href:'' } %}
-{% endif %} #}
+{% endif %}
 
   {% if next != 0 %}
     {% set nextButton = { text: 'Next', href: ''} %}
@@ -89,7 +74,32 @@
 
   <h2>Existing application forms</h2>
 
-  <p class="govuk-body">Edit or view saved application forms.</p>
+  <div class="moj-search">
+    <form method="get">
+      {{ govukInput({
+        classes: 'moj-search__input ' + (params.input.classes if params.input.classes),
+        label: {
+          classes: 'moj-search__label govuk-!-font-weight-bold',
+          text: 'Find an order'
+        },
+        hint: {
+          classes: 'moj-search__hint',
+          text: 'You can search by subject name'
+        },
+        id: 'keyword',
+        name: 'keyword',
+        type: 'search',
+        value: keyword
+      }) }}
+
+      {{ govukButton({
+        classes: 'moj-search__button',
+        text: 'Search'
+      }) }}
+    </form>
+  </div>
+
+  <p class="govuk-body govuk-!-margin-top-5">Edit or view saved application forms.</p>
 
   <div id="ordersList">
     <ul class="govuk-task-list">

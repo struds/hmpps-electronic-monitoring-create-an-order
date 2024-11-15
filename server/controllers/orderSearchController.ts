@@ -3,6 +3,7 @@ import { Page } from '../services/auditService'
 import { AuditService, OrderSearchService } from '../services'
 import { Order } from '../models/Order'
 import paths from '../constants/paths'
+import { z } from 'zod'
 
 type OrderSearchViewModel = {
   orders: Array<{
@@ -10,7 +11,12 @@ type OrderSearchViewModel = {
     status: string
     summaryUri: string
   }>
+  keyword: string
 }
+
+const SearchQuery = z.object({
+  keyword: z.string().default('')
+})
 
 export default class OrderSearchController {
   constructor(
@@ -26,7 +32,7 @@ export default class OrderSearchController {
     return `${order.deviceWearer.firstName || ''} ${order.deviceWearer.lastName || ''}`
   }
 
-  private constructViewModel(orders: Array<Order>): OrderSearchViewModel {
+  private constructViewModel(orders: Array<Order>, keyword: string): OrderSearchViewModel {
     return {
       orders: orders.map(order => {
         return {
@@ -35,6 +41,7 @@ export default class OrderSearchController {
           summaryUri: paths.ORDER.SUMMARY.replace(':orderId', order.id),
         }
       }),
+      keyword,
     }
   }
 
@@ -44,12 +51,14 @@ export default class OrderSearchController {
       correlationId: req.id,
     })
 
-    try {
-      const orders = await this.orderSearchService.searchOrders({ accessToken: res.locals.user.token, searchTerm: '' })
+    const { keyword } = SearchQuery.parse(req.query);
 
-      res.render('pages/index', this.constructViewModel(orders))
+    try {
+      const orders = await this.orderSearchService.searchOrders({ accessToken: res.locals.user.token, searchTerm: keyword })
+
+      res.render('pages/index', this.constructViewModel(orders, keyword))
     } catch (e) {
-      res.render('pages/index', this.constructViewModel([]))
+      res.render('pages/index', this.constructViewModel([], keyword))
     }
   }
 }
