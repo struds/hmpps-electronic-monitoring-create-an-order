@@ -2,9 +2,9 @@
 
 ## What is scenario testing?
 
-The scenario test suite is a subset of the Cypress tests defined in this repository. All scenario tests can be found in the `./integration_tests/scenarios` directory.
+The scenario test suite is a subset of the Cypress tests defined in this repository. All scenario tests can be found in the `integration_tests/scenarios` directory.
 
-The scenario tests ensure that realistic Electronic Monitoring Orders can be created by users of the online form. These scenarios were provided by Serco. The tests ensure that the API generates json requests that matches the well known requests generated during end-to-end testing with Serco.
+The scenario tests ensure that realistic Electronic Monitoring Orders can be created by users of the online form. These scenarios were provided by Serco. The tests ensure that the API generates json requests that match the well known requests generated during end-to-end testing with Serco.
 
 ## Environment
 
@@ -47,7 +47,7 @@ This should produce an output where all of the containers have a status of "UP" 
 }
 ```
 
-Now we can start the application:
+Start the application:
 
 ```shell
 npm run start-scenarios:dev
