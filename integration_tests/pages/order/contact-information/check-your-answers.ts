@@ -1,5 +1,4 @@
 import paths from '../../../../server/constants/paths'
-import { PageElement } from '../../page'
 import CheckYourAnswersPage from '../../checkYourAnswersPage'
 import SummaryListComponent from '../../components/summaryListComponent'
 

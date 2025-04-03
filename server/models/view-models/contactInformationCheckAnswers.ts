@@ -13,7 +13,13 @@ import I18n from '../../types/i18n'
 
 const createContactDetailsAnswers = (order: Order, content: I18n) => {
   const uri = paths.CONTACT_INFORMATION.CONTACT_DETAILS.replace(':orderId', order.id)
-  return [createTextAnswer( content.pages.contactDetails.questions.contactNumber.text, order.contactDetails?.contactNumber, uri)]
+  return [
+    createTextAnswer(
+      content.pages.contactDetails.questions.contactNumber.text,
+      order.contactDetails?.contactNumber,
+      uri,
+    ),
+  ]
 }
 
 const createAddressAnswers = (order: Order, content: I18n) => {
@@ -48,16 +54,12 @@ const createAddressAnswers = (order: Order, content: I18n) => {
   return answers
 }
 
-const getNotifyingOrganisationNameAnswer = (order: Order,content: I18n, uri: string) => {
+const getNotifyingOrganisationNameAnswer = (order: Order, content: I18n, uri: string) => {
   const notifyingOrganisation = order.interestedParties?.notifyingOrganisation
-  const questions = content.pages.interestedParties.questions
+  const { questions } = content.pages.interestedParties
   if (notifyingOrganisation === 'PRISON') {
     return [
-      createTextAnswer(
-        questions.prison.text,
-        lookup(prisons, order.interestedParties?.notifyingOrganisationName),
-        uri,
-      ),
+      createTextAnswer(questions.prison.text, lookup(prisons, order.interestedParties?.notifyingOrganisationName), uri),
     ]
   }
 
@@ -84,9 +86,9 @@ const getNotifyingOrganisationNameAnswer = (order: Order,content: I18n, uri: str
   return []
 }
 
-const getResponsibleOrganisationRegionAnswer = (order: Order,content: I18n, uri: string) => {
+const getResponsibleOrganisationRegionAnswer = (order: Order, content: I18n, uri: string) => {
   const responsibleOrganisation = order.interestedParties?.responsibleOrganisation
-  const questions = content.pages.interestedParties.questions
+  const { questions } = content.pages.interestedParties
   if (responsibleOrganisation === 'PROBATION') {
     return [
       createTextAnswer(
@@ -115,7 +117,7 @@ const createInterestedPartiesAnswers = (order: Order, content: I18n) => {
   const responsibleOrganisationAddress = order.addresses.find(
     ({ addressType }) => addressType === 'RESPONSIBLE_ORGANISATION',
   )
-  const questions = content.pages.interestedParties.questions
+  const { questions } = content.pages.interestedParties
   return [
     createTextAnswer(
       questions.notifyingOrganisation.text,
@@ -128,11 +130,7 @@ const createInterestedPartiesAnswers = (order: Order, content: I18n) => {
       order.interestedParties?.notifyingOrganisationEmail,
       uri,
     ),
-    createTextAnswer(
-      questions.responsibleOfficerName.text,
-      order.interestedParties?.responsibleOfficerName,
-      uri,
-    ),
+    createTextAnswer(questions.responsibleOfficerName.text, order.interestedParties?.responsibleOfficerName, uri),
     createTextAnswer(
       questions.responsibleOfficerPhoneNumber.text,
       order.interestedParties?.responsibleOfficerPhoneNumber,
@@ -143,12 +141,8 @@ const createInterestedPartiesAnswers = (order: Order, content: I18n) => {
       lookup(responsibleOrganisations, order.interestedParties?.responsibleOrganisation),
       uri,
     ),
-    ...getResponsibleOrganisationRegionAnswer(order,content, uri),
-    createAddressAnswer(
-      questions.responsibleOrganisationAddress.text,
-      responsibleOrganisationAddress,
-      uri,
-    ),
+    ...getResponsibleOrganisationRegionAnswer(order, content, uri),
+    createAddressAnswer(questions.responsibleOrganisationAddress.text, responsibleOrganisationAddress, uri),
     createTextAnswer(
       questions.responsibleOrganisationPhoneNumber.text,
       order.interestedParties?.responsibleOrganisationPhoneNumber,
@@ -163,9 +157,9 @@ const createInterestedPartiesAnswers = (order: Order, content: I18n) => {
 }
 
 const createViewModel = (order: Order, content: I18n) => ({
-  contactDetails: createContactDetailsAnswers(order,content),
-  addresses: createAddressAnswers(order,content),
-  interestedParties: createInterestedPartiesAnswers(order,content),
+  contactDetails: createContactDetailsAnswers(order, content),
+  addresses: createAddressAnswers(order, content),
+  interestedParties: createInterestedPartiesAnswers(order, content),
 })
 
 export default createViewModel
