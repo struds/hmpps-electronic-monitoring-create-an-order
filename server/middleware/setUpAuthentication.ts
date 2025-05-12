@@ -28,6 +28,7 @@ export default function setUpAuth(): Router {
       failureRedirect: '/autherror',
     })(req, res, next),
   )
+
   const authUrl = config.apis.hmppsAuth.url
   const authParameters = `client_id=${config.apis.hmppsAuth.apiClientId}&redirect_uri=${config.domain}`
 
