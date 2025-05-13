@@ -68,12 +68,20 @@
 
         {% set statusArgs = statusArgs if isOrderEditable else {} %}
 
-        {% set items = (items.push({
-          idPrefix: "order-section",
-          title: { text: name },
-          href: section.path,
-          status: statusArgs
-        }), items) %}
+        {% if section.name == 'ADDITIONAL_DOCUMENTS' %}
+          {% set items = (items.push({
+            idPrefix: "order-section",
+            title: { text: name },
+            href: section.path
+          }), items) %}
+        {% else %}
+          {% set items = (items.push({
+            idPrefix: "order-section",
+            title: { text: name },
+            href: section.path,
+            status: statusArgs
+          }), items) %}
+        {% endif %}
 
       {% endfor %}
 
