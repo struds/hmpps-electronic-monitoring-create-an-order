@@ -48,10 +48,10 @@ context('Order Summary', () => {
       page.submitOrderButton.should('be.disabled')
     })
 
-    it('should display the Additional Documents task without a status tag for a new order', () => {
+    it('should display the Additional Documents task as optional for a new order', () => {
       const page = Page.visit(OrderTasksPage, { orderId: mockOrderId })
 
-      page.additionalDocumentsTask.shouldNotHaveStatus()
+      page.additionalDocumentsTask.shouldHaveStatus('Optional')
       page.additionalDocumentsTask.link.should('have.attr', 'href', `/order/${mockOrderId}/attachments`)
     })
 
@@ -102,10 +102,10 @@ context('Order Summary', () => {
       page.submitOrderButton.should('be.disabled')
     })
 
-    it('should display the Additional Documents task without a status tag for a new variation', () => {
+    it('should display the Additional Documents task as optional for a new variation', () => {
       const page = Page.visit(OrderTasksPage, { orderId: mockOrderId })
 
-      page.additionalDocumentsTask.shouldNotHaveStatus()
+      page.additionalDocumentsTask.shouldHaveStatus('Optional')
       page.additionalDocumentsTask.link.should('have.attr', 'href', `/order/${mockOrderId}/attachments`)
     })
 
