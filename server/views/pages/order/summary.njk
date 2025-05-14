@@ -57,7 +57,6 @@
       {% set items = [] %}
       {% for section in sections %}
         {% set name = section.name | replace("_", " ") | capitalize %}
-        {% set hintArgs = {} %}
 
         {% if not isOrderEditable %}
           {% set statusArgs = {} %}
@@ -67,9 +66,6 @@
               text: 'Optional',
               classes: 'govuk-tag--green'
             }
-          } %}
-          {% set hintArgs = {
-            text: "Add all documents required for the order."
           } %}
         {% elif section.completed %}
           {% set statusArgs = { 
