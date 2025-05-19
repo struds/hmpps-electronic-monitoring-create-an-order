@@ -215,9 +215,9 @@ UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
 ```
 
 ```mermaid
-C4Context
+C4Container
 
-  title CEMO - Containers
+  title Create an EM Order - Containers
 
   System_Ext(HMPPSAuth, "HMPPS Auth", $descr="HMPPS Auth")
   Person(CEMOUser, "CEMO User", $descr="Notifying Person")
