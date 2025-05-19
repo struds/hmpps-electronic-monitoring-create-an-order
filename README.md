@@ -169,3 +169,88 @@ Instructions for this can be found in the readme of the [Create an EM Order API 
 ## Change log
 
 A changelog for the service is available [here](./CHANGELOG.md)
+
+## Architecture
+
+```mermaid
+C4Context
+  title Create an EM Order
+
+  Enterprise_Boundary(hmpps, "HMPPS") {
+    Person(prisonUser, "Prison User", "Prison Admin")
+    Person(probationUser, "Probation User", "Probation Admin")
+  
+    Enterprise_Boundary(justiceDigital, "HMPPS Digital") {
+      System_Ext(hmppsAuth, "HMPPS Auth", "")
+      System(cemo, "CEMO", "")
+      System_Ext(probationInCourtService, "Prepare a Case for Sentence Service", "")
+    }
+  }
+
+  Enterprise_Boundary(FMS, "Field Monitoring Service") {
+    System_Ext(emFMS, "EM Field Monitoring Service (FMS)", "")
+
+    Person(emFMSUser, "FMS User", "Serco Employee")
+  }
+  
+  Enterprise_Boundary(HMTCS, "HMCTS") {
+    Person(courtUser, "Court User", "Court Admin")
+    System_Ext(commonPlatform, "Common Platform (HMCTS)", "")
+  }
+  
+  Person(homeOfficeUser , "Home Office User", "Immigration")
+
+  Rel(commonPlatform, probationInCourtService, "Streams court events")
+  Rel(probationInCourtService, cemo, "Streams court events")
+  Rel(cemo, hmppsAuth, "Gets an Auth token")
+  Rel(cemo, emFMS, "Creates an Order over API")
+
+  Rel(courtUser, commonPlatform, "Order created on Common Platform")
+  Rel(prisonUser, cemo, "Enter an order")
+  Rel(probationUser, cemo, "Enter an order")
+  Rel(homeOfficeUser, cemo, "Enter an order")
+  Rel(emFMSUser, emFMS, "Validates order")
+
+UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
+```
+
+```mermaid
+C4Context
+
+  title CEMO - Containers
+
+  System_Ext(HMPPSAuth, "HMPPS Auth", $descr="HMPPS Auth")
+  Person(CEMOUser, "CEMO User", $descr="Notifying Person")
+
+  System_Boundary("CEMO_boundary", "CEMO") {
+    Container(CEMO.CreateanEMOrder, "Create an EM Order")
+    Container(CEMO.CreateanEMOrderAPI, "Create an EM Order API")
+    ContainerDb(CEMO.OrdersDatabase, "Orders Database", $descr="AWS RDS, Postgres")
+    Container(CEMO.Documents, "Documents", $descr="AWS S3")
+    ContainerQueue(CEMO.CourtCaseEventsQueue, "Court Case Events Queue", $descr="AWS SNS")
+    Container(CEMO.EMMessageConsumer, "EM Message Consumer")
+    ContainerQueue(CEMO.DeadletterQueue, "Dead-letter Queue", $descr="AWS SNS")
+  }
+
+  System_Boundary("PCS_boundary", "Prepare a Case") {
+    System_Ext(PrepareaCaseforSentenceService, "Prepare a Case for Sentence Service", $descr="HMPPS Digital System")
+  }
+
+  Enterprise_Boundary("FMS_boundary", "FMS") {
+    System_Ext(EMFieldMonitoringServiceFMS, "EM Field Monitoring Service (FMS)", $descr="Serco, ServiceNow")
+  }
+
+  Rel(CEMO.CourtCaseEventsQueue, CEMO.DeadletterQueue, "failed messages")
+  Rel(CEMO.CourtCaseEventsQueue, CEMO.EMMessageConsumer, "consumes em orders")
+  Rel(PrepareaCaseforSentenceService, CEMO.CourtCaseEventsQueue, "listens")
+  Rel(CEMO.CreateanEMOrder, CEMO.CreateanEMOrderAPI, "creates an order")
+  Rel(CEMO.CreateanEMOrderAPI, CEMO.OrdersDatabase, "CRUD", "JSON/TLS")
+  Rel(CEMO.CreateanEMOrderAPI, CEMO.Documents, "Uploads", "JSON/TLS")
+  Rel(CEMOUser, CEMO.CreateanEMOrder, "keys in and submits an EM order")
+  Rel(CEMOUser, HMPPSAuth, "login")
+  Rel(CEMO.CreateanEMOrder, HMPPSAuth, "Authentication and Authorisation")
+  Rel(CEMO.EMMessageConsumer, CEMO.CreateanEMOrderAPI, "Sends EM orders to REST API", "JSON/TLS")
+  Rel(CEMO.CreateanEMOrderAPI, EMFieldMonitoringServiceFMS, "Sends an order, receives Unique Identifier (UID)", "JSON/TLS")
+
+  UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
+```
