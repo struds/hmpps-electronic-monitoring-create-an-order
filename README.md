@@ -254,3 +254,64 @@ C4Container
 
   UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
 ```
+
+```mermaid
+C4Deployment
+
+  title CEMO - Deployment - End to End Live
+
+  Deployment_Node(EndtoEndLive.ServiceNowSaaSAzureUK, "ServiceNow SaaS - Azure UK")  {
+    Deployment_Node(EndtoEndLive.ServiceNowSaaSAzureUK.ElectronicMonitoringServiceFMS.ServiceNow, "ServiceNow") {
+      System_Ext(EndtoEndLive.ServiceNowSaaSAzureUK.ElectronicMonitoringServiceFMS.ServiceNow.OrderManagementSystem_1, "Order Management System", $descr="Service Now")
+
+      Deployment_Node(EndtoEndLive.ServiceNowSaaSAzureUK.ElectronicMonitoringServiceFMS, "Electronic Monitoring Service - FMS") {
+        System_Ext(EndtoEndLive.ServiceNowSaaSAzureUK.ElectronicMonitoringServiceFMS.ServiceNowIntegrationHub, "ServiceNow Integration Hub / REST API")
+      }
+    }
+  }
+
+  Deployment_Node(EndtoEndLive.CommonPlatformHMTCSAzureUK, "Common Platform HMTCS - Azure UK") {
+    System_Ext(EndtoEndLive.CommonPlatformHMTCSAzureUK.CommonPlatformHMCTS_1, "Common Platform (HMCTS)", $descr="Court Services")
+  }
+
+  Deployment_Node(EndtoEndLive.AmazonWebServicesMoJCloudPlatform, "Amazon Web Services - MoJ Cloud Platform") {
+    Deployment_Node(EndtoEndLive.AmazonWebServicesMoJCloudPlatform.EUWest2London, "EU-West-2 London") {
+      Deployment_Node(EndtoEndLive.AmazonWebServicesMoJCloudPlatform.EUWest2London.CEMO, "CEMO") {
+        Container(EndtoEndLive.AmazonWebServicesMoJCloudPlatform.EUWest2London.CEMO.CreateanEMOrder_1, "Create an EM Order")
+        Container(EndtoEndLive.AmazonWebServicesMoJCloudPlatform.EUWest2London.CEMO.CreateanEMOrderAPI_1, "Create an EM Order API")
+        ContainerDb(EndtoEndLive.AmazonWebServicesMoJCloudPlatform.EUWest2London.CEMO.OrdersDatabase_1, "Orders Database", $descr="AWS RDS, Postgres")
+        Container(EndtoEndLive.AmazonWebServicesMoJCloudPlatform.EUWest2London.CEMO.Documents_1, "Documents", $descr="AWS S3")
+        ContainerQueue(EndtoEndLive.AmazonWebServicesMoJCloudPlatform.EUWest2London.CEMO.CourtCaseEventsQueue_1, "Court Case Events Queue", $descr="AWS SNS")
+        ContainerQueue(EndtoEndLive.AmazonWebServicesMoJCloudPlatform.EUWest2London.CEMO.DeadletterQueue_1, "Dead-letter Queue", $descr="AWS SNS")
+        Container(EndtoEndLive.AmazonWebServicesMoJCloudPlatform.EUWest2London.CEMO.EMMessageConsumer_1, "EM Message Consumer")
+      }
+
+      Deployment_Node(EndtoEndLive.AmazonWebServicesMoJCloudPlatform.EUWest2London.PrepareaCaseforSentence, "Prepare a Case for Sentence") {
+        Container(EndtoEndLive.AmazonWebServicesMoJCloudPlatform.EUWest2London.PrepareaCaseforSentence.CourtHearingEventReceiver_1, "Court Hearing Event Receiver")
+        Container(EndtoEndLive.AmazonWebServicesMoJCloudPlatform.EUWest2London.PrepareaCaseforSentence.CourtCaseEventsTopic_1, "Court Case Events Topic", $descr="AWS SNS")
+      }
+
+      Deployment_Node(EndtoEndLive.AmazonWebServicesMoJCloudPlatform.EUWest2London.HMPPSAuth, "HMPPS Auth") {
+        System_Ext(EndtoEndLive.AmazonWebServicesMoJCloudPlatform.EUWest2London.HMPPSAuth.HMPPSAuth_1, "HMPPS Auth", $descr="HMPPS Auth")
+      }
+
+    }
+  }
+
+  Rel(EndtoEndLive.AmazonWebServicesMoJCloudPlatform.EUWest2London.CEMO.CreateanEMOrder_1, EndtoEndLive.AmazonWebServicesMoJCloudPlatform.EUWest2London.HMPPSAuth.HMPPSAuth_1, "Authentication and Authorisation")
+
+  Rel(EndtoEndLive.AmazonWebServicesMoJCloudPlatform.EUWest2London.CEMO.CreateanEMOrderAPI_1, EndtoEndLive.ServiceNowSaaSAzureUK.ElectronicMonitoringServiceFMS.ServiceNowIntegrationHub, "Sends an order, receives Unique Identifier")
+  Rel(EndtoEndLive.ServiceNowSaaSAzureUK.ElectronicMonitoringServiceFMS.ServiceNowIntegrationHub, EndtoEndLive.ServiceNowSaaSAzureUK.ElectronicMonitoringServiceFMS.ServiceNow.OrderManagementSystem_1, "Sends an order")
+  Rel(EndtoEndLive.CommonPlatformHMTCSAzureUK.CommonPlatformHMCTS_1, EndtoEndLive.AmazonWebServicesMoJCloudPlatform.EUWest2London.PrepareaCaseforSentence.CourtHearingEventReceiver_1, "Sends EM orders to REST API", $techn="JSON/TLS")
+  Rel(EndtoEndLive.AmazonWebServicesMoJCloudPlatform.EUWest2London.CEMO.CreateanEMOrder_1, EndtoEndLive.AmazonWebServicesMoJCloudPlatform.EUWest2London.CEMO.CreateanEMOrderAPI_1, "creates an order", $techn="JSON/TLS")
+  Rel(EndtoEndLive.AmazonWebServicesMoJCloudPlatform.EUWest2London.CEMO.CreateanEMOrderAPI_1, EndtoEndLive.AmazonWebServicesMoJCloudPlatform.EUWest2London.CEMO.OrdersDatabase_1, "CRUD", $techn="JSON/TLS")
+  Rel(EndtoEndLive.AmazonWebServicesMoJCloudPlatform.EUWest2London.CEMO.CreateanEMOrderAPI_1, EndtoEndLive.AmazonWebServicesMoJCloudPlatform.EUWest2London.CEMO.Documents_1, "Uploads", $techn="JSON/TLS")
+  Rel(EndtoEndLive.AmazonWebServicesMoJCloudPlatform.EUWest2London.CEMO.CourtCaseEventsQueue_1, EndtoEndLive.AmazonWebServicesMoJCloudPlatform.EUWest2London.CEMO.DeadletterQueue_1, "failed messages")
+  Rel(EndtoEndLive.AmazonWebServicesMoJCloudPlatform.EUWest2London.CEMO.EMMessageConsumer_1, EndtoEndLive.AmazonWebServicesMoJCloudPlatform.EUWest2London.CEMO.CreateanEMOrderAPI_1, "Sends EM orders to REST API", $techn="JSON/TLS")
+  Rel(EndtoEndLive.AmazonWebServicesMoJCloudPlatform.EUWest2London.CEMO.CourtCaseEventsQueue_1, EndtoEndLive.AmazonWebServicesMoJCloudPlatform.EUWest2London.CEMO.EMMessageConsumer_1, "consumes em orders")
+  Rel(EndtoEndLive.AmazonWebServicesMoJCloudPlatform.EUWest2London.PrepareaCaseforSentence.CourtCaseEventsTopic_1, 
+  EndtoEndLive.AmazonWebServicesMoJCloudPlatform.EUWest2London.CEMO.CourtCaseEventsQueue_1, "listens")
+  Rel(EndtoEndLive.AmazonWebServicesMoJCloudPlatform.EUWest2London.PrepareaCaseforSentence.CourtHearingEventReceiver_1, EndtoEndLive.AmazonWebServicesMoJCloudPlatform.EUWest2London.PrepareaCaseforSentence.CourtCaseEventsTopic_1, "")
+
+  UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
+```
